@@ -10,11 +10,11 @@
     "agents"
   ],
   "counts": {
-    "parameters": 2002,
-    "acceptance_targets": 66,
+    "parameters": 2011,
+    "acceptance_targets": 67,
     "assets": 41,
     "recipe_components": 1362,
-    "transitions": 45
+    "transitions": 46
   },
   "parameters": {
     "asset": {
@@ -106,11 +106,6 @@
       "value": "1000",
       "unit": "kg",
       "precision": "integer_or_scaled_asset"
-    },
-    "bitcoin.asset.claimed_sats_raidable": {
-      "value": "true",
-      "unit": "boolean",
-      "precision": "boolean"
     },
     "bitcoin.asset.donkey_routes_enabled": {
       "value": "false",
@@ -231,6 +226,11 @@
       "value": "0",
       "unit": "Satoshis",
       "precision": "integer_or_scaled_asset"
+    },
+    "bitcoin.reward.prefunded_budget_sats": {
+      "value": "100000000",
+      "unit": "Satoshis",
+      "precision": "integer"
     },
     "bitcoin.storage.inbound_transfer_headroom_formula": {
       "value": "amount<=capacity-satoshis-sum(unsettled_reward_reservations)",
@@ -420,9 +420,9 @@
       "precision": "integer_or_scaled_asset"
     },
     "bridge.efficiency_bps.after_village_parent_tax_destination_hs": {
-      "value": "parent_realm_owner_external_wallet",
-      "unit": "basis_points",
-      "precision": "integer_or_scaled_asset"
+      "value": "current_parent_realm_owner_external_wallet",
+      "unit": "enum",
+      "precision": "exact_or_enum"
     },
     "bridge.efficiency_bps.after_village_parent_tax_hs": {
       "value": "500",
@@ -523,13 +523,23 @@
       "unit": "basis points",
       "precision": "integer"
     },
+    "bridge.village_out_tax_destination": {
+      "value": "current_parent_realm_owner_external_wallet",
+      "unit": "enum",
+      "precision": "exact_or_enum"
+    },
+    "bridge.village_out_tax_order": {
+      "value": "tax_gross_then_apply_world_efficiency_to_village_owner_remainder",
+      "unit": "enum",
+      "precision": "exact_or_enum"
+    },
     "bridge.village.currency_out_parent_tax_bps": {
       "value": "500",
       "unit": "rule_or_config_value",
       "precision": "integer"
     },
     "bridge.village.currency_out_parent_tax_destination": {
-      "value": "parent_realm_owner_external_wallet",
+      "value": "current_parent_realm_owner_external_wallet",
       "unit": "rule_or_config_value",
       "precision": "exact_or_enum"
     },
@@ -1094,9 +1104,9 @@
       "precision": "integer_or_scaled_asset"
     },
     "combat.capture_assets.village": {
-      "value": "not_conquerable",
+      "value": "all_entity_bound_state_and_owner",
       "unit": "enum",
-      "precision": "integer_or_scaled_asset"
+      "precision": "exact_or_enum"
     },
     "combat.capture_resolution.all": {
       "value": "combat_clear_then_immediate_capture",
@@ -1158,6 +1168,16 @@
       "unit": "bps damage multiplier",
       "precision": "integer"
     },
+    "combat.hostile_holding_outcome": {
+      "value": "decisive_combat_then_complete_capture",
+      "unit": "enum",
+      "precision": "exact_or_enum"
+    },
+    "combat.inventory_extraction_without_capture": {
+      "value": "not_allowed",
+      "unit": "enum",
+      "precision": "exact_or_enum"
+    },
     "combat.knight_guard_incoming.all": {
       "value": "8500",
       "unit": "bps damage multiplier",
@@ -1166,26 +1186,6 @@
     "combat.knight_structure_assault.all": {
       "value": "11500",
       "unit": "bps damage multiplier",
-      "precision": "integer"
-    },
-    "combat.raid_material_fraction.first": {
-      "value": "2000",
-      "unit": "bps above protected floors",
-      "precision": "integer"
-    },
-    "combat.raid_protected.all": {
-      "value": "realm_village_workers_wheat_fish",
-      "unit": "enum",
-      "precision": "integer_or_scaled_asset"
-    },
-    "combat.raid_repeat_multiplier.all": {
-      "value": "5000",
-      "unit": "bps per repeated raid in 24h",
-      "precision": "integer"
-    },
-    "combat.raid_troop_destroy_fraction.first": {
-      "value": "1000",
-      "unit": "bps unassigned troop stock",
       "precision": "integer"
     },
     "combat.ranged_crossbow_army.all": {
@@ -1488,40 +1488,10 @@
       "unit": "Tribe VP display scale",
       "precision": "integer_or_scaled_asset"
     },
-    "food.camp_fish_raid_floor": {
-      "value": "0",
-      "unit": "rule_or_config_value",
-      "precision": "integer"
-    },
-    "food.camp_wheat_raid_floor": {
-      "value": "0",
-      "unit": "rule_or_config_value",
-      "precision": "integer"
-    },
     "food.claim_workers_per_1000": {
       "value": "6",
       "unit": "Workers_per_1000_Food",
       "precision": "integer"
-    },
-    "food.realm_fish_raid_floor": {
-      "value": "60000",
-      "unit": "Fish",
-      "precision": "integer_or_scaled_asset"
-    },
-    "food.realm_wheat_raid_floor": {
-      "value": "60000",
-      "unit": "Wheat",
-      "precision": "integer_or_scaled_asset"
-    },
-    "food.village_fish_raid_floor": {
-      "value": "30000",
-      "unit": "Fish",
-      "precision": "integer_or_scaled_asset"
-    },
-    "food.village_wheat_raid_floor": {
-      "value": "30000",
-      "unit": "Wheat",
-      "precision": "integer_or_scaled_asset"
     },
     "hs.capture_effect": {
       "value": "settle_elapsed_then_transfer_future_control_only",
@@ -2082,46 +2052,6 @@
       "value": "5000",
       "unit": "rule_or_config_value",
       "precision": "integer"
-    },
-    "raid.loot_capacity_kg_per_surviving_troop": {
-      "value": "10",
-      "unit": "rule_or_config_value",
-      "precision": "integer"
-    },
-    "raid.loot_destination": {
-      "value": "deployed_army",
-      "unit": "rule_or_config_value",
-      "precision": "exact_or_enum"
-    },
-    "raid.loot_requires_donkeys": {
-      "value": "false",
-      "unit": "rule_or_config_value",
-      "precision": "exact_or_enum"
-    },
-    "raid.loot_requires_logistics_workers": {
-      "value": "false",
-      "unit": "rule_or_config_value",
-      "precision": "exact_or_enum"
-    },
-    "raid.loot_requires_physical_return_or_transfer": {
-      "value": "true",
-      "unit": "rule_or_config_value",
-      "precision": "exact_or_enum"
-    },
-    "raid.repeat_scope": {
-      "value": "defending_holding_global_across_attackers",
-      "unit": "rule_or_config_value",
-      "precision": "exact_or_enum"
-    },
-    "raid.repeat_window_seconds": {
-      "value": "86400",
-      "unit": "rule_or_config_value",
-      "precision": "integer"
-    },
-    "raid.troop_stock_effect": {
-      "value": "destroy_unassigned_claimed_only",
-      "unit": "rule_or_config_value",
-      "precision": "exact_or_enum"
     },
     "recipe_topology": {
       "value": "resource-themed recipes with coverage across all 22 ordinary resources; exact components are listed in recipes",
@@ -8423,7 +8353,7 @@
       "unit": "Workers",
       "precision": "integer"
     },
-    "recovery.village.worker_floor_policy": {
+    "recovery.village.worker_only_route_policy": {
       "value": "quarters_first_24h_recoverable_food_first_36h",
       "unit": "rule_or_config_value",
       "precision": "exact_or_enum"
@@ -8470,11 +8400,6 @@
     },
     "relic.ordinary_amm_enabled": {
       "value": "false",
-      "unit": "rule_or_config_value",
-      "precision": "exact_or_enum"
-    },
-    "relic.raid_policy": {
-      "value": "field_army_lootable_settlement_transfers_only_on_conquest",
       "unit": "rule_or_config_value",
       "precision": "exact_or_enum"
     },
@@ -8601,6 +8526,11 @@
     "score.tribe_attribution": {
       "value": "cement_to_wallet_tribe_at_time_of_earning",
       "unit": "rule_or_config_value",
+      "precision": "exact_or_enum"
+    },
+    "score.unaffiliated_attribution": {
+      "value": "personal_counter_only_no_tribe_score",
+      "unit": "rule",
       "precision": "exact_or_enum"
     },
     "settlement_upgrade_family": {
@@ -9223,8 +9153,13 @@
       "unit": "rule_or_config_value",
       "precision": "exact_or_enum"
     },
+    "village.capture.owner_effect": {
+      "value": "winning_army_controller_becomes_owner",
+      "unit": "enum",
+      "precision": "exact_or_enum"
+    },
     "village.creation_fee_charge_policy": {
-      "value": "once_per_successfully_created_village_no_double_charge_with_village_pass",
+      "value": "once_per_successfully_created_village",
       "unit": "rule_or_config_value",
       "precision": "exact_or_enum"
     },
@@ -9263,45 +9198,180 @@
       "unit": "rule_or_config_value",
       "precision": "integer"
     },
-    "village.rebellion_mode": {
-      "value": "parent_realm_conquest_if_combat_victory",
+    "village.max_per_parent_realm": {
+      "value": "6",
+      "unit": "Villages",
+      "precision": "integer"
+    },
+    "village.owner.authority_scope": {
+      "value": "complete_village_gameplay_bridge_and_ownership_transfer",
       "unit": "enum",
-      "precision": "integer_or_scaled_asset"
+      "precision": "exact_or_enum"
     },
-    "village.rebellion.external_troop_ingress_allowed": {
-      "value": "false",
-      "unit": "boolean",
-      "precision": "integer_or_scaled_asset"
-    },
-    "village.rebellion.parent_attachment_preserved": {
-      "value": "true",
-      "unit": "boolean",
-      "precision": "integer_or_scaled_asset"
-    },
-    "village.rebellion.realm_assets_follow_standard_capture": {
-      "value": "true",
-      "unit": "boolean",
-      "precision": "integer_or_scaled_asset"
-    },
-    "village.rebellion.source_controller": {
-      "value": "village_controller",
+    "village.owner.change_policy": {
+      "value": "current_owner_direct_transfer_or_successful_capture",
       "unit": "enum",
-      "precision": "integer_or_scaled_asset"
+      "precision": "exact_or_enum"
     },
-    "village.rebellion.target_scope": {
-      "value": "attached_parent_realm_only",
+    "village.owner.initial_assignment": {
+      "value": "parent_realm_owner_at_mint",
       "unit": "enum",
-      "precision": "integer_or_scaled_asset"
+      "precision": "exact_or_enum"
     },
-    "village.rebellion.victory_effect": {
-      "value": "claim_parent_realm_retain_village",
+    "village.owner.transfer_effect": {
+      "value": "replace_owner_and_invalidate_previous_owner_authority",
       "unit": "enum",
-      "precision": "integer_or_scaled_asset"
+      "precision": "exact_or_enum"
     },
-    "village.rebellion.village_control_preserved": {
-      "value": "true",
-      "unit": "boolean",
-      "precision": "integer_or_scaled_asset"
+    "village.parent_capacity_accounting": {
+      "value": "all_attached_villages_including_captured",
+      "unit": "enum",
+      "precision": "exact_or_enum"
+    },
+    "village.parent_link_mutability": {
+      "value": "immutable_after_mint",
+      "unit": "enum",
+      "precision": "exact_or_enum"
+    },
+    "village.parent_realm_capture_effect": {
+      "value": "village_owner_and_attachment_unchanged",
+      "unit": "enum",
+      "precision": "exact_or_enum"
+    },
+    "village.resource_roll.count": {
+      "value": "1",
+      "unit": "ordinary_resources",
+      "precision": "integer"
+    },
+    "village.resource_roll.pool_size": {
+      "value": "22",
+      "unit": "ordinary_resources",
+      "precision": "integer"
+    },
+    "village.resource_roll.selection": {
+      "value": "collection_trait_frequency_weighted_random_without_player_choice",
+      "unit": "enum",
+      "precision": "exact_or_enum"
+    },
+    "village.resource_roll.total_weight": {
+      "value": "24850",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.adamantine": {
+      "value": "55",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.alchemical_silver": {
+      "value": "93",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.coal": {
+      "value": "3833",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.cold_iron": {
+      "value": "957",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.copper": {
+      "value": "2643",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.deep_crystal": {
+      "value": "239",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.diamonds": {
+      "value": "300",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.dragonhide": {
+      "value": "23",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.ethereal_silica": {
+      "value": "162",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.gold": {
+      "value": "914",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.hartwood": {
+      "value": "594",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.ignium": {
+      "value": "172",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.ironwood": {
+      "value": "1179",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.mithral": {
+      "value": "37",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.obsidian": {
+      "value": "2216",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.ruby": {
+      "value": "239",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.sapphire": {
+      "value": "247",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.silver": {
+      "value": "1741",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.stone": {
+      "value": "3941",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.true_ice": {
+      "value": "139",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.twilight_quartz": {
+      "value": "111",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight.wood": {
+      "value": "5015",
+      "unit": "weight",
+      "precision": "integer"
+    },
+    "village.resource_roll.weight_source": {
+      "value": "resource_trait_occurrence_counts_in_bundled_8000_realm_collection",
+      "unit": "enum",
+      "precision": "exact_or_enum"
     },
     "wonders.s2_enabled": {
       "value": "true",
@@ -9312,11 +9382,6 @@
       "value": "false",
       "unit": "boolean",
       "precision": "exact"
-    },
-    "worker.camp_raid_floor": {
-      "value": "0",
-      "unit": "rule_or_config_value",
-      "precision": "integer"
     },
     "worker.claim_food_coverage_distinct_from_desired_action_coverage": {
       "value": "true",
@@ -9382,16 +9447,6 @@
       "value": "12.5",
       "unit": "Wheat_and_Fish_each_per_Worker",
       "precision": "integer_or_scaled_asset"
-    },
-    "worker.realm_raid_floor": {
-      "value": "3000",
-      "unit": "Workers",
-      "precision": "integer"
-    },
-    "worker.village_raid_floor": {
-      "value": "1500",
-      "unit": "Workers",
-      "precision": "integer"
     },
     "world_node.all.maintenance": {
       "value": "exempt",
@@ -10354,13 +10409,6 @@
       "maximum": "18",
       "acceptance": "measured value must remain within the stated range"
     },
-    "telemetry.raid.victim_output_day7_min_bps": {
-      "value": "4000",
-      "unit": "basis_points",
-      "minimum": "2500",
-      "maximum": "5500",
-      "acceptance": "measured value must remain within the stated range"
-    },
     "telemetry.resource.end_unspent_issuance_share_max_bps": {
       "value": "4000",
       "unit": "basis_points",
@@ -10403,13 +10451,6 @@
       "maximum": "2000",
       "acceptance": "measured value must remain within the stated range"
     },
-    "telemetry.ux.casual_sessions_per_day_max": {
-      "value": "2",
-      "unit": "sessions",
-      "minimum": "2",
-      "maximum": "3",
-      "acceptance": "measured value must remain within the stated range"
-    },
     "telemetry.ux.raw_transactions_per_settlement_day_p90_max": {
       "value": "15",
       "unit": "transactions",
@@ -10423,6 +10464,27 @@
       "minimum": "5000",
       "maximum": "7000",
       "acceptance": "measured value must remain within the stated range"
+    },
+    "village.capture_state_conservation_bps": {
+      "value": "10000",
+      "unit": "basis_points",
+      "minimum": "10000",
+      "maximum": "10000",
+      "acceptance": "every successful Village capture conserves and transfers all defined entity-bound state"
+    },
+    "village.previous_owner_stale_authority_rejection_bps": {
+      "value": "10000",
+      "unit": "basis_points",
+      "minimum": "10000",
+      "maximum": "10000",
+      "acceptance": "every action signed by an Owner displaced through transfer or capture is rejected without state change"
+    },
+    "village.transfer_authority_replacement_bps": {
+      "value": "10000",
+      "unit": "basis_points",
+      "minimum": "10000",
+      "maximum": "10000",
+      "acceptance": "every successful direct transfer gives the recipient complete Village authority and removes it from the sender"
     },
     "winner_bought_score_share": {
       "value": "1000",
@@ -10496,7 +10558,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10510,7 +10571,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10524,7 +10584,6 @@
       "precision_decimals": "9",
       "weight_grams": "100",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10538,7 +10597,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10552,7 +10610,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10566,7 +10623,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10580,7 +10636,6 @@
       "precision_decimals": "0",
       "weight_grams": "10000",
       "capacity_family": "troop",
-      "raid_policy": "destroyed_not_stolen",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10594,7 +10649,6 @@
       "precision_decimals": "0",
       "weight_grams": "10000",
       "capacity_family": "troop",
-      "raid_policy": "destroyed_not_stolen",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10608,7 +10662,6 @@
       "precision_decimals": "0",
       "weight_grams": "10000",
       "capacity_family": "troop",
-      "raid_policy": "destroyed_not_stolen",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10622,7 +10675,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10636,7 +10688,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10650,7 +10701,6 @@
       "precision_decimals": "0",
       "weight_grams": "1000",
       "capacity_family": "donkey",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10665,7 +10715,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10679,7 +10728,6 @@
       "precision_decimals": "9",
       "weight_grams": "100",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "denied",
       "bridge_out": "denied",
       "transferable": "true",
@@ -10693,7 +10741,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10707,7 +10754,6 @@
       "precision_decimals": "9",
       "weight_grams": "100",
       "capacity_family": "material",
-      "raid_policy": "protected_floor_realm_village",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10721,7 +10767,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10735,7 +10780,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10749,7 +10793,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10763,7 +10806,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10777,7 +10819,6 @@
       "precision_decimals": "0",
       "weight_grams": "10000",
       "capacity_family": "troop",
-      "raid_policy": "destroyed_not_stolen",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10791,7 +10832,6 @@
       "precision_decimals": "0",
       "weight_grams": "10000",
       "capacity_family": "troop",
-      "raid_policy": "destroyed_not_stolen",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10805,7 +10845,6 @@
       "precision_decimals": "0",
       "weight_grams": "10000",
       "capacity_family": "troop",
-      "raid_policy": "destroyed_not_stolen",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10819,7 +10858,6 @@
       "precision_decimals": "18",
       "weight_grams": "1",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10833,7 +10871,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10847,7 +10884,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10861,7 +10897,6 @@
       "precision_decimals": "0",
       "weight_grams": "10000",
       "capacity_family": "troop",
-      "raid_policy": "destroyed_not_stolen",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10875,7 +10910,6 @@
       "precision_decimals": "0",
       "weight_grams": "10000",
       "capacity_family": "troop",
-      "raid_policy": "destroyed_not_stolen",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10889,7 +10923,6 @@
       "precision_decimals": "0",
       "weight_grams": "10000",
       "capacity_family": "troop",
-      "raid_policy": "destroyed_not_stolen",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10903,7 +10936,6 @@
       "precision_decimals": "0",
       "weight_grams": "0",
       "capacity_family": "relic_inventory",
-      "raid_policy": "unraidable",
       "bridge_in": "denied",
       "bridge_out": "denied",
       "transferable": "false",
@@ -10917,7 +10949,6 @@
       "precision_decimals": "0",
       "weight_grams": "0",
       "capacity_family": "none",
-      "raid_policy": "unraidable",
       "bridge_in": "denied",
       "bridge_out": "denied",
       "transferable": "false",
@@ -10931,7 +10962,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10945,7 +10975,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10959,7 +10988,6 @@
       "precision_decimals": "0",
       "weight_grams": "1",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "denied",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10973,7 +11001,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -10987,7 +11014,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -11001,7 +11027,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -11015,7 +11040,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -11029,7 +11053,6 @@
       "precision_decimals": "9",
       "weight_grams": "100",
       "capacity_family": "material",
-      "raid_policy": "protected_floor_realm_village",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -11043,7 +11066,6 @@
       "precision_decimals": "9",
       "weight_grams": "1000",
       "capacity_family": "material",
-      "raid_policy": "stealable_claimed",
       "bridge_in": "allowed",
       "bridge_out": "allowed",
       "transferable": "true",
@@ -11057,7 +11079,6 @@
       "precision_decimals": "0",
       "weight_grams": "1000",
       "capacity_family": "worker",
-      "raid_policy": "protected_floor_realm_village",
       "bridge_in": "denied",
       "bridge_out": "denied",
       "transferable": "true",
@@ -34260,14 +34281,14 @@
       "rounding": "floor",
       "disposition": "credit",
       "source_sink": "transfer",
-      "destination": "parent_realm_inventory",
-      "capacity_family": "parent_realm_inventory",
+      "destination": "current_parent_realm_owner_external_wallet",
+      "capacity_family": "external_boundary",
       "timer_seconds": "0",
       "maintenance_interaction": "route_defined",
       "freight_interaction": "route_defined",
       "partial_behavior": "route_defined",
       "failure_behavior": "atomic_revert",
-      "parameter_keys": "bridge.village_out_tax_bps|universal.bps_denominator"
+      "parameter_keys": "bridge.village_out_tax_bps|bridge.village_out_tax_destination|bridge.village_out_tax_order|universal.bps_denominator"
     },
     {
       "recipe_id": "village_bridge_out",
@@ -41786,9 +41807,25 @@
       "parameter_keys": "onchain.limit.finalization_positions_per_batch|onchain.finalization.permissionless_progress_enabled"
     },
     {
+      "transition_id": "transfer_village",
+      "subsystem": "village_authority",
+      "caller": "Village_owner",
+      "source_state": "owned_Village",
+      "preconditions": "caller_is_current_owner_and_recipient_wallet_is_valid_and_distinct",
+      "debits": "none",
+      "credits": "replace_Village_owner_with_recipient",
+      "escrows": "none",
+      "timers": "authority_revision",
+      "capacity_check": "none",
+      "partial_rule": "not_partial",
+      "failure_rule": "atomic_no_authority_change",
+      "events": "VillageTransferred",
+      "parameter_keys": "village.owner.*|village.parent_link_mutability"
+    },
+    {
       "transition_id": "bridge_request",
       "subsystem": "bridge",
-      "caller": "Realm_or_Village_controller",
+      "caller": "Realm_owner_or_Village_owner",
       "source_state": "active_season_or_exit",
       "preconditions": "asset_direction_allowed",
       "debits": "source_asset",
@@ -41850,9 +41887,25 @@
       "parameter_keys": "capture.*"
     },
     {
+      "transition_id": "capture_village",
+      "subsystem": "capture",
+      "caller": "winning_army_controller",
+      "source_state": "Village",
+      "preconditions": "decisive_combat_victory",
+      "debits": "none",
+      "credits": "complete_entity_bound_state_and_Village_ownership_to_winner",
+      "escrows": "none",
+      "timers": "settle_then_capture_timestamp_and_authority_revision",
+      "capacity_check": "none",
+      "partial_rule": "not_partial",
+      "failure_rule": "atomic_full_transfer_or_no_ownership_change",
+      "events": "VillageCaptured",
+      "parameter_keys": "combat.capture_assets.village|village.capture.*|village.owner.*|village.parent_link_mutability"
+    },
+    {
       "transition_id": "claim_donkey",
       "subsystem": "producer_claim",
-      "caller": "Market in Realm|Village|Camp",
+      "caller": "authorized Market operator or Village Owner",
       "source_state": "active_season",
       "preconditions": "Wheat",
       "debits": "per_nominal_donkey",
@@ -41868,7 +41921,7 @@
     {
       "transition_id": "claim_fish",
       "subsystem": "producer_claim",
-      "caller": "Realm|Village|Camp",
+      "caller": "authorized Realm or Camp operator|Village Owner",
       "source_state": "active_season",
       "preconditions": "none",
       "debits": "proportional_nominal_claim",
@@ -41884,7 +41937,7 @@
     {
       "transition_id": "claim_ordinary_resource",
       "subsystem": "producer_claim",
-      "caller": "metadata-eligible Realm|rolled-resource Village",
+      "caller": "authorized Realm operator|rolled-resource Village Owner",
       "source_state": "active_season",
       "preconditions": "none",
       "debits": "proportional_nominal_claim",
@@ -41916,7 +41969,7 @@
     {
       "transition_id": "claim_producer",
       "subsystem": "production",
-      "caller": "building_controller",
+      "caller": "holding_owner",
       "source_state": "producer",
       "preconditions": "settle_then_quote_then_validate",
       "debits": "nominal_recipe_and_entitlement",
@@ -41932,7 +41985,7 @@
     {
       "transition_id": "claim_research",
       "subsystem": "research_claim",
-      "caller": "Artificer in Realm|Village",
+      "caller": "authorized Realm Artificer operator|Village Owner",
       "source_state": "active_season",
       "preconditions": "Essence",
       "debits": "proportional_nominal_claim",
@@ -41948,7 +42001,7 @@
     {
       "transition_id": "claim_t1_troop_efficient",
       "subsystem": "military_claim",
-      "caller": "Military Building in Realm|Village",
+      "caller": "authorized Realm Military Building operator|Village Owner",
       "source_state": "active_season",
       "preconditions": "Food|configured class-specific ordinary resources",
       "debits": "per_nominal_troop",
@@ -41964,7 +42017,7 @@
     {
       "transition_id": "claim_t1_troop_worker_only",
       "subsystem": "military_claim",
-      "caller": "T1 Military Building in Realm|Village",
+      "caller": "T1 authorized Realm Military Building operator|Village Owner",
       "source_state": "active_season",
       "preconditions": "Food",
       "debits": "per_nominal_troop",
@@ -41980,7 +42033,7 @@
     {
       "transition_id": "claim_t2_t3_troop",
       "subsystem": "military_claim",
-      "caller": "T2|T3 Military Building in Realm|Village",
+      "caller": "T2|T3 authorized Realm Military Building operator|Village Owner",
       "source_state": "active_season",
       "preconditions": "Food|configured class-specific ordinary resources|lower-tier troops|Essence",
       "debits": "typed_batch_recipe",
@@ -41996,7 +42049,7 @@
     {
       "transition_id": "claim_wheat",
       "subsystem": "producer_claim",
-      "caller": "Realm|Village|Camp",
+      "caller": "authorized Realm or Camp operator|Village Owner",
       "source_state": "active_season",
       "preconditions": "none",
       "debits": "proportional_nominal_claim",
@@ -42060,7 +42113,7 @@
     {
       "transition_id": "complete_training",
       "subsystem": "military",
-      "caller": "settlement_controller",
+      "caller": "holding_owner",
       "source_state": "training_escrow",
       "preconditions": "ready_at<=now",
       "debits": "escrow",
@@ -42140,7 +42193,7 @@
     {
       "transition_id": "dispatch_regular_delivery",
       "subsystem": "logistics",
-      "caller": "eligible Realm|Village|Camp source holding",
+      "caller": "eligible authorized Realm or Camp operator|Village Owner source holding",
       "source_state": "active_season",
       "preconditions": "non-empty cargo|typed capacity|ceil(weight/100kg) consumed Donkeys",
       "debits": "cargo + consumed Donkeys + max(1,ceil(payload_mass_kg/kg_per_Worker)) Workers",
@@ -42266,9 +42319,25 @@
       "parameter_keys": "20|40|80"
     },
     {
+      "transition_id": "mint_village",
+      "subsystem": "village",
+      "caller": "parent_Realm_owner",
+      "source_state": "active_parent_Realm_with_free_Village_capacity",
+      "preconditions": "active_season|fewer_than_six_attached_Villages|USDC_available|randomness_available",
+      "debits": "USD_5_in_USDC_atomically_converted_to_LORDS",
+      "credits": "new_Village|caller_as_Owner|one_weighted_random_ordinary_resource",
+      "escrows": "none",
+      "timers": "mint_timestamp",
+      "capacity_check": "parent_Realm_Village_capacity",
+      "partial_rule": "not_partial",
+      "failure_rule": "atomic_revert_no_fee_no_Village_no_random_assignment",
+      "events": "VillageMinted",
+      "parameter_keys": "village.creation_fee_*|village.max_per_parent_realm|village.resource_roll.*|village.owner.*"
+    },
+    {
       "transition_id": "pay_building_maintenance",
       "subsystem": "maintenance",
-      "caller": "building_controller",
+      "caller": "holding_owner",
       "source_state": "building",
       "preconditions": "complete_route_inputs",
       "debits": "recipe_components",
@@ -42280,38 +42349,6 @@
       "failure_rule": "atomic_revert",
       "events": "MaintenancePaid",
       "parameter_keys": "maintenance.*|recipe.maintenance.*"
-    },
-    {
-      "transition_id": "raid_settlement",
-      "subsystem": "raid",
-      "caller": "attacking_army_controller",
-      "source_state": "battle_won",
-      "preconditions": "cooldown_and_target_stock",
-      "debits": "attacker_costs",
-      "credits": "stolen_materials_and_workers",
-      "escrows": "none",
-      "timers": "raid_cooldown",
-      "capacity_check": "attacker_capacity_or_delivery",
-      "partial_rule": "configured_take",
-      "failure_rule": "protected_floors",
-      "events": "RaidResolved",
-      "parameter_keys": "raid.*"
-    },
-    {
-      "transition_id": "rebel_village",
-      "subsystem": "village",
-      "caller": "village_controller",
-      "source_state": "Village_with_attached_parent_Realm",
-      "preconditions": "locally_raised_Village_army_defeats_and_can_claim_attached_parent_Realm",
-      "debits": "standard_combat_and_capture_costs",
-      "credits": "complete_parent_Realm_child_state_ownership_to_Village_controller_and_Village_preserved",
-      "escrows": "none",
-      "timers": "battle_and_capture_timestamps",
-      "capacity_check": "none",
-      "partial_rule": "not_partial",
-      "failure_rule": "atomic_full_parent_Realm_transfer_or_no_control_change",
-      "events": "VillageRebellionWon|RealmCaptured",
-      "parameter_keys": "village.rebellion_*|capture.*|combat.*"
     },
     {
       "transition_id": "set_emergency_pause",
@@ -42364,7 +42401,7 @@
     {
       "transition_id": "swap_central_bank",
       "subsystem": "market",
-      "caller": "Realm_or_Village_controller",
+      "caller": "Realm_owner_or_Village_owner",
       "source_state": "active_season_or_exit",
       "preconditions": "configured_single_primary_origin_bank",
       "debits": "sold_asset_and_fees",
@@ -42396,7 +42433,7 @@
     {
       "transition_id": "transfer_p2p",
       "subsystem": "logistics",
-      "caller": "settlement_controller",
+      "caller": "holding_owner",
       "source_state": "active_season_or_exit",
       "preconditions": "non-empty cargo|typed capacity|ceil(weight/100kg) consumed Donkeys",
       "debits": "cargo + consumed Donkeys + max(1,ceil(payload_mass_kg/kg_per_Worker)) Workers",
@@ -42412,7 +42449,7 @@
     {
       "transition_id": "upgrade_building",
       "subsystem": "capital",
-      "caller": "Realm through T3|Village through T2",
+      "caller": "Realm owner through T3|Village Owner through T2",
       "source_state": "active_season",
       "preconditions": "complete fixed tier recipe|no active military training escrow|output-change reset explicitly confirmed after claim-first preflight",
       "debits": "fixed_incremental_upgrade_recipe_never_repeated_family_escalated",
@@ -42428,7 +42465,7 @@
     {
       "transition_id": "upgrade_settlement",
       "subsystem": "progression",
-      "caller": "Realm Settlement-City-Kingdom-Empire|Village Settlement-City",
+      "caller": "Realm owner Settlement-City-Kingdom-Empire|Village Owner Settlement-City",
       "source_state": "active_season",
       "preconditions": "typed resources and other configured inputs",
       "debits": "fixed_progression_recipe",
